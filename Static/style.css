@@ -135,3 +135,116 @@ button:hover {
 .clickable:hover {
     background-color: #1043dcbc;
 }
+
+
+    
+/* Ensuring the iframe is responsive */
+#visit-antigua {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 Aspect Ratio (h/w) */
+    height: 0;
+    overflow: hidden;
+    max-width: 100%;
+    background: #000;
+}
+
+#visit-antigua iframe, #map {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+#map {
+    display: none; /* Hide the map initially */
+}
+
+#exit-map-btn {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    padding: 8px 12px;
+    background-color: #ec008e96;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Chatbot styles */
+#chatbotContainer {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    height: 400px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+    transition: height 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Minimized chatbox */
+#chatbotContainer.minimized {
+    height: 50px;
+}
+
+/* Toggle button */
+#toggle-chatbox {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #ec008e96;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#chatbox {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 0 0 15px 15px;
+    box-shadow: inset 0px -2px 10px rgba(0, 0, 0, 0.05);
+}
+
+#messages {
+    flex: 1;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    background-color: #f9f9f9;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+}
+
+/* Input area */
+#inputContainer {
+    display: flex;
+    padding: 10px 0;
+    border-top: 1px solid #eee;
+    background-color: #fff;
+}
+
+button {
+    padding: 10px 20px;
+    cursor: pointer;
+    border: none;
+    background-color: #ec008e96;
+    color: white;
+    border-radius: 20px;
+    font-size: 14px;
+    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
+    transition: background-color 0.2s ease;
+}

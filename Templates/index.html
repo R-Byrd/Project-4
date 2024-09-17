@@ -9,26 +9,6 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <style>
-        /* Ensuring the iframe is responsive */
-        #visit-antigua {
-            position: relative;
-            padding-bottom: 56.25%; /* 16:9 Aspect Ratio (h/w) */
-            height: 0;
-            overflow: hidden;
-            max-width: 100%;
-            background: #000;
-        }
-
-        #visit-antigua iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-    </style>
 </head>
 <body>
     <!-- Banner section with text overlay -->
@@ -39,6 +19,7 @@
 
     <!-- Chatbot container -->
     <div id="chatbotContainer">
+        <button id="toggle-chatbox" onclick="toggleChatbox()">Minimize</button>
         <div id="chatbox">
             <div id="messages"></div>
             <input type="text" id="userMessage" placeholder="Ask a question..." autocomplete="off">
@@ -48,19 +29,78 @@
 
     <!-- Responsive iframe for Visit Antigua and Barbuda -->
     <section id="visit-antigua">
-        <iframe src="https://www.visitantiguabarbuda.com/" allowfullscreen></iframe>
+        <iframe id="visit-antigua-iframe" src="https://www.visitantiguabarbuda.com/" allowfullscreen></iframe>
+        <div id="map"></div> <!-- Leaflet map div with hidden state -->
+        <button id="exit-map-btn" onclick="exitMap()">Exit Map</button> <!-- Exit button to go back to the website -->
     </section>
 
     <script>
-        // Store the current suggestions and their answers
-        let currentSuggestions = [];
+        let isMinimized = false;
+        let mapInitialized = false;
+
+        // Function to toggle chatbox between minimized and expanded
+        function toggleChatbox() {
+            const chatboxContainer = document.getElementById('chatbotContainer');
+            const toggleButton = document.getElementById('toggle-chatbox');
+
+            if (isMinimized) {
+                chatboxContainer.classList.remove('minimized');
+                toggleButton.textContent = 'Minimize';
+                isMinimized = false;
+            } else {
+                chatboxContainer.classList.add('minimized');
+                toggleButton.textContent = 'Expand';
+                isMinimized = true;
+            }
+        }
 
         // Listen for "Enter" key press in the input field
         document.getElementById('userMessage').addEventListener('keydown', function (event) {
-            if (event.key === 'Enter') {
-                sendMessage();
+            if (event.key === 'Enter' || event.keyCode === 13) {
+                event.preventDefault(); // Prevent the default behavior
+                sendMessage(); // Call sendMessage when Enter is pressed
             }
         });
+
+        // Function to display the Leaflet map or interactive map
+        function displayMap(answerType) {
+            const iframe = document.getElementById('visit-antigua-iframe');
+            const mapDiv = document.getElementById('map');
+            const exitButton = document.getElementById('exit-map-btn');
+
+            if (answerType === 'interactive_map') {
+                // Show the interactive map URL in the iframe
+                iframe.src = 'https://tourmkr.com/F1wDKd8y7O/42284745p&250.96h&75.13t';
+                iframe.style.display = 'block';
+                mapDiv.style.display = 'none'; // Hide the Leaflet map
+            } else {
+                // Hide the iframe and display the Leaflet map
+                iframe.style.display = 'none';
+                mapDiv.style.display = 'block';
+
+                // Initialize the Leaflet map if it hasn't been initialized yet
+                if (!mapInitialized) {
+                    const map = L.map('map').setView([17.0747, -61.8175], 8); // Coordinates for Antigua and Barbuda
+
+                    // Set up the tile layer for the map
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        maxZoom: 18,
+                        attribution: '© OpenStreetMap'
+                    }).addTo(map);
+
+                    // Add markers for Antigua and Barbuda
+                    L.marker([17.118, -61.845]).addTo(map) // Antigua
+                        .bindPopup('<b>Antigua</b><br>Welcome to Antigua.').openPopup();
+                    L.marker([17.637, -61.828]).addTo(map) // Barbuda
+                        .bindPopup('<b>Barbuda</b><br>Welcome to Barbuda.').openPopup();
+
+                    mapInitialized = true; // Mark the map as initialized
+                }
+            }
+
+            // Show the exit button
+            exitButton.style.display = 'block';
+        }
 
         // Function to send the user message to the chatbot API
         async function sendMessage() {
@@ -86,9 +126,11 @@
 
             const data = await response.json();
 
-            // Check if the answer is 'map' (special case to show the map)
+            // Check if the answer is 'map' or 'interactive_map'
             if (data.suggestions[0].answer === 'map') {
-                displayMap(); // Show the map
+                displayMap('map');
+            } else if (data.suggestions[0].answer === 'interactive_map') {
+                displayMap('interactive_map');
             } else {
                 // Display the chatbot's response (suggested questions)
                 currentSuggestions = data.suggestions; // Store the suggestions and answers for later use
@@ -117,31 +159,28 @@
             // Display the bot's answer in the chatbox
             const botAnswerDiv = document.createElement('div');
             botAnswerDiv.classList.add('bot-message');
-            botAnswerDiv.textContent = `Bot: ${answer}`;
+            botAnswerDiv.textContent = `LillyBot: ${answer}`;
             document.getElementById('messages').appendChild(botAnswerDiv);
 
             // Scroll to the bottom of the chatbox
             document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
         }
 
-        // Function to display the Leaflet map
-        function displayMap() {
-            document.getElementById('mapContainer').style.display = 'block'; // Show the map container
+        // Function to exit the map and go back to the website
+        function exitMap() {
+            const iframe = document.getElementById('visit-antigua-iframe');
+            const mapDiv = document.getElementById('map');
+            const exitButton = document.getElementById('exit-map-btn');
 
-            // Initialize the Leaflet map
-            const map = L.map('map').setView([17.0747, -61.8175], 8); // Coordinates for Antigua and Barbuda
+            // Switch back to the website URL
+            iframe.src = 'https://www.visitantiguabarbuda.com/';
+            iframe.style.display = 'block';
 
-            // Set up the tile layer for the map
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 18,
-                attribution: '© OpenStreetMap'
-            }).addTo(map);
+            // Hide the Leaflet map
+            mapDiv.style.display = 'none';
 
-            // Add markers for Antigua and Barbuda
-            L.marker([17.118, -61.845]).addTo(map) // Antigua
-                .bindPopup('<b>Antigua</b><br>Welcome to Antigua.').openPopup();
-            L.marker([17.637, -61.828]).addTo(map) // Barbuda
-                .bindPopup('<b>Barbuda</b><br>Welcome to Barbuda.').openPopup();
+            // Hide the exit button after switching back to the website
+            exitButton.style.display = 'none';
         }
     </script>
 </body>
