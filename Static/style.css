@@ -1,3 +1,4 @@
+/* Global Styles */
 body {
     font-family: Arial, sans-serif;
     background-color: #f0f0f0;
@@ -10,7 +11,7 @@ h1 {
     margin-top: 20px;
 }
 
-/* Banner Styling: Ensure responsiveness */
+/* Banner Styling */
 .banner-container {
     position: relative;
     text-align: center;
@@ -30,152 +31,24 @@ h1 {
     left: 50%;
     transform: translate(-50%, -50%);
     font-family: 'Comic Sans MS', cursive, sans-serif;
-    font-size: 3vw; /* Responsive font size */
+    font-size: 3vw;
     color: white;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Optional text shadow for readability */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
     font-weight: bold;
 }
 
-/* For very small devices */
+/* Responsive Styles for Small Devices */
 @media (max-width: 600px) {
     .banner {
         max-height: 200px;
     }
 
     .banner-text {
-        font-size: 5vw; /* Adjust font size for small screens */
+        font-size: 5vw;
     }
 }
 
-/* Chatbot container positioned in the bottom right, always in front */
-#chatbotContainer {
-    position: fixed; /* Keep it fixed on the screen */
-    bottom: 20px;
-    right: 20px;
-    width: 300px;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
-    overflow: hidden;
-    z-index: 9999; /* High z-index to keep the chatbox on top of other elements */
-}
-
-/* Chatbox styling */
-#chatbox {
-    display: flex;
-    flex-direction: column;
-    height: 400px;
-    padding: 10px;
-}
-
-#messages {
-    flex: 1;
-    overflow-y: auto;
-    padding: 10px;
-    border-bottom: 1px solid #ccc;
-    margin-bottom: 10px;
-    background-color: #f9f9f9;
-}
-
-#userMessage {
-    width: calc(100% - 60px);
-    padding: 10px;
-    margin-right: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-button {
-    padding: 10px;
-    cursor: pointer;
-    border: none;
-    background-color: #ec008e96;
-    color: white;
-    border-radius: 5px;
-}
-
-button:hover {
-    background-color: #ec008e96;
-}
-
-/* User (answer) message styling - right side */
-.user-message {
-    margin-bottom: 10px;
-    text-align: right;
-    background-color: #ec008e96;
-    color: #000000;
-    padding: 10px;
-    border-radius: 15px;
-    max-width: 80%;
-    float: right;
-    clear: both;
-}
-
-/* Bot (question) message styling - left side */
-.bot-message {
-    margin-bottom: 10px;
-    text-align: left;
-    background-color: #f0f0f0;
-    color: #333;
-    padding: 10px;
-    border-radius: 15px;
-    max-width: 80%;
-    float: left;
-    clear: both;
-}
-
-/* Chat bubble style for clickable questions */
-.clickable {
-    cursor: pointer;
-    background-color: #cdeaffe2;
-    color: #000000;
-}
-
-.clickable:hover {
-    background-color: #1043dcbc;
-}
-
-
-    
-/* Ensuring the iframe is responsive */
-#visit-antigua {
-    position: relative;
-    padding-bottom: 56.25%; /* 16:9 Aspect Ratio (h/w) */
-    height: 0;
-    overflow: hidden;
-    max-width: 100%;
-    background: #000;
-}
-
-#visit-antigua iframe, #map {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: none;
-}
-
-#map {
-    display: none; /* Hide the map initially */
-}
-
-#exit-map-btn {
-    display: none;
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 1000;
-    padding: 8px 12px;
-    background-color: #ec008e96;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-/* Chatbot styles */
+/* Chatbot Styles */
 #chatbotContainer {
     position: fixed;
     bottom: 20px;
@@ -192,7 +65,55 @@ button:hover {
     flex-direction: column;
 }
 
-/* Minimized chatbox */
+#chatbox {
+    display: flex;
+    flex-direction: column;
+    height: 100%;  /* Ensure chatbox takes up full container height */
+    overflow: hidden;  /* Prevent content from pushing beyond container */
+}
+
+#messages {
+    flex: 1;  /* Let the messages area grow and fill the remaining space */
+    overflow-y: auto;  /* Allow messages area to scroll */
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-bottom: 1px solid #ccc;
+}
+
+/* Input area */
+#inputContainer {
+    display: flex;
+    align-items: center;
+    padding: 5px 10px;
+    border-top: 1px solid #eee;
+    background-color: #fff;
+}
+
+/* Much smaller input box */
+#userMessage {
+    width: calc(100% - 60px);
+    padding: 10px;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Button Styles */
+button {
+    padding: 10px;
+    cursor: pointer;
+    border: none;
+    background-color: #ec008e96;
+    color: white;
+    border-radius: 5px;
+    transition: background-color 0.2s ease;
+}
+
+button:hover {
+    background-color: #d6007a;
+}
+
+/* Minimized Chatbox */
 #chatbotContainer.minimized {
     height: 50px;
 }
@@ -210,41 +131,77 @@ button:hover {
     cursor: pointer;
 }
 
-#chatbox {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+/* User Messages (right-aligned) */
+.user-message {
+    margin-bottom: 10px;
+    text-align: right;
+    background-color: #ec008e96;
+    color: #fff;
     padding: 10px;
-    background-color: #fff;
-    border-radius: 0 0 15px 15px;
-    box-shadow: inset 0px -2px 10px rgba(0, 0, 0, 0.05);
+    border-radius: 15px;
+    max-width: 80%;
+    float: right;
+    clear: both;
 }
 
-#messages {
-    flex: 1;
+/* Bot Messages (left-aligned) */
+.bot-message {
+    margin-bottom: 10px;
+    text-align: left;
+    background-color: #f0f0f0;
+    color: #333;
     padding: 10px;
-    border-bottom: 1px solid #eee;
-    background-color: #f9f9f9;
-    overflow-y: auto;
-    scroll-behavior: smooth;
+    border-radius: 15px;
+    max-width: 80%;
+    float: left;
+    clear: both;
 }
 
-/* Input area */
-#inputContainer {
-    display: flex;
-    padding: 10px 0;
-    border-top: 1px solid #eee;
-    background-color: #fff;
-}
-
-button {
-    padding: 10px 20px;
+/* Clickable chat bubbles */
+.clickable {
     cursor: pointer;
+    background-color: #cdeaffe2;
+    color: #000;
+}
+
+.clickable:hover {
+    background-color: #1043dcbc;
+}
+
+/* Iframe and Map Styling */
+#visit-antigua {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+    height: 0;
+    overflow: hidden;
+    max-width: 100%;
+    background: #000;
+}
+
+#visit-antigua iframe, #map {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     border: none;
+}
+
+#map {
+    display: none;
+}
+
+/* Exit Map Button */
+#exit-map-btn {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    padding: 8px 12px;
     background-color: #ec008e96;
     color: white;
-    border-radius: 20px;
-    font-size: 14px;
-    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
-    transition: background-color 0.2s ease;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
 }
