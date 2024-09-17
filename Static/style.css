@@ -1,0 +1,137 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Banner Styling: Ensure responsiveness */
+.banner-container {
+    position: relative;
+    text-align: center;
+    color: white;
+}
+
+.banner {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    max-height: 300px;
+}
+
+.banner-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-size: 3vw; /* Responsive font size */
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Optional text shadow for readability */
+    font-weight: bold;
+}
+
+/* For very small devices */
+@media (max-width: 600px) {
+    .banner {
+        max-height: 200px;
+    }
+
+    .banner-text {
+        font-size: 5vw; /* Adjust font size for small screens */
+    }
+}
+
+/* Chatbot container positioned in the bottom right, always in front */
+#chatbotContainer {
+    position: fixed; /* Keep it fixed on the screen */
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    overflow: hidden;
+    z-index: 9999; /* High z-index to keep the chatbox on top of other elements */
+}
+
+/* Chatbox styling */
+#chatbox {
+    display: flex;
+    flex-direction: column;
+    height: 400px;
+    padding: 10px;
+}
+
+#messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+}
+
+#userMessage {
+    width: calc(100% - 60px);
+    padding: 10px;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    padding: 10px;
+    cursor: pointer;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* User (answer) message styling - right side */
+.user-message {
+    margin-bottom: 10px;
+    text-align: right;
+    background-color: #e619d51f;
+    color: #000000;
+    padding: 10px;
+    border-radius: 15px;
+    max-width: 80%;
+    float: right;
+    clear: both;
+}
+
+/* Bot (question) message styling - left side */
+.bot-message {
+    margin-bottom: 10px;
+    text-align: left;
+    background-color: #f0f0f0;
+    color: #333;
+    padding: 10px;
+    border-radius: 15px;
+    max-width: 80%;
+    float: left;
+    clear: both;
+}
+
+/* Chat bubble style for clickable questions */
+.clickable {
+    cursor: pointer;
+    background-color: #cdeaffe2;
+    color: #000000;
+}
+
+.clickable:hover {
+    background-color: #1043dcbc;
+}

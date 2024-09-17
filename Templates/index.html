@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LillyBot!</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+</head>
+<body>
+    <!-- Banner section with text overlay -->
+    <header class="banner-container">
+        <img src="{{ url_for('static', filename='images/banner.jpg') }}" alt="Website Banner" class="banner">
+        <div class="banner-text">Visit Antigua and Barbuda</div>
+    </header>
+
+    <!-- Chatbot container -->
+    <div id="chatbotContainer">
+        <div id="chatbox">
+            <div id="messages"></div>
+            <input type="text" id="userMessage" placeholder="Ask a question..." autocomplete="off">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <!-- Leaflet map container (hidden by default) -->
+    <div id="mapContainer" style="display: none;">
+        <h3>Antigua and Barbuda on the Map</h3>
+        <div id="map" style="height: 400px;"></div>
+    </div>
+
+    <script>
+        // Store the current suggestions and their answers
+        let currentSuggestions = [];
+
+        // Listen for "Enter" key press in the input field
+        document.getElementById('userMessage').addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Function to send the user message to the chatbot API
+        async function sendMessage() {
+            const userMessage = document.getElementById('userMessage').value;
+
+            // If the input is empty, don't send anything
+            if (!userMessage.trim()) return;
+
+            // Display the user's message in the chatbox
+            const userMessageDiv = document.createElement('div');
+            userMessageDiv.classList.add('user-message');
+            userMessageDiv.textContent = `You: ${userMessage}`;
+            document.getElementById('messages').appendChild(userMessageDiv);
+
+            // Send the message to the Flask API using fetch
+            const response = await fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: userMessage })
+            });
+
+            const data = await response.json();
+
+            // Check if the answer is 'map' (special case to show the map)
+            if (data.suggestions[0].answer === 'map') {
+                displayMap(); // Show the map
+            } else {
+                // Display the chatbot's response (suggested questions)
+                currentSuggestions = data.suggestions; // Store the suggestions and answers for later use
+                data.suggestions.forEach((item, index) => {
+                    const botMessageDiv = document.createElement('div');
+                    botMessageDiv.classList.add('bot-message', 'clickable');
+                    botMessageDiv.textContent = `${item.question}`;
+                    botMessageDiv.setAttribute('data-index', index); // Store the index to retrieve the answer later
+                    botMessageDiv.addEventListener('click', displayAnswer); // Add click event to show answer
+                    document.getElementById('messages').appendChild(botMessageDiv);
+                });
+            }
+
+            // Scroll to the bottom of the chatbox
+            document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
+
+            // Clear the input field
+            document.getElementById('userMessage').value = '';
+        }
+
+        // Function to display the answer when a question is clicked
+        function displayAnswer(event) {
+            const index = event.target.getAttribute('data-index');
+            const answer = currentSuggestions[index].answer;
+
+            // Display the bot's answer in the chatbox
+            const botAnswerDiv = document.createElement('div');
+            botAnswerDiv.classList.add('bot-message');
+            botAnswerDiv.textContent = `Bot: ${answer}`;
+            document.getElementById('messages').appendChild(botAnswerDiv);
+
+            // Scroll to the bottom of the chatbox
+            document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
+        }
+
+        // Function to display the Leaflet map
+        function displayMap() {
+            document.getElementById('mapContainer').style.display = 'block'; // Show the map container
+
+            // Initialize the Leaflet map
+            const map = L.map('map').setView([17.0747, -61.8175], 8); // Coordinates for Antigua and Barbuda
+
+            // Set up the tile layer for the map
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 18,
+                attribution: '© OpenStreetMap'
+            }).addTo(map);
+
+            // Add markers for Antigua and Barbuda
+            L.marker([17.118, -61.845]).addTo(map) // Antigua
+                .bindPopup('<b>Antigua</b><br>Welcome to Antigua.').openPopup();
+            L.marker([17.637, -61.828]).addTo(map) // Barbuda
+                .bindPopup('<b>Barbuda</b><br>Welcome to Barbuda.').openPopup();
+        }
+    </script>
+</body>
+</html>
