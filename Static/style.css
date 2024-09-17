@@ -90,20 +90,20 @@ button {
     padding: 10px;
     cursor: pointer;
     border: none;
-    background-color: #007bff;
+    background-color: #ec008e96;
     color: white;
     border-radius: 5px;
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #ec008e96;
 }
 
 /* User (answer) message styling - right side */
 .user-message {
     margin-bottom: 10px;
     text-align: right;
-    background-color: #e619d51f;
+    background-color: #ec008e96;
     color: #000000;
     padding: 10px;
     border-radius: 15px;

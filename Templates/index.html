@@ -14,7 +14,7 @@
     <!-- Banner section with text overlay -->
     <header class="banner-container">
         <img src="{{ url_for('static', filename='images/banner.jpg') }}" alt="Website Banner" class="banner">
-        <div class="banner-text">Visit Antigua and Barbuda</div>
+        <div class="banner-text">LillyBot</div>
     </header>
 
     <!-- Chatbot container -->
@@ -31,6 +31,12 @@
         <h3>Antigua and Barbuda on the Map</h3>
         <div id="map" style="height: 400px;"></div>
     </div>
+
+    <!-- Embedding iframe to reference Visit Antigua & Barbuda website -->
+    <section id="visit-antigua">
+       <!-- <h2>Learn More About Antigua & Barbuda</h2>-->
+        <iframe src="https://www.visitantiguabarbuda.com/" width="100%" height="600" style="border:none;"></iframe>
+    </section>
 
     <script>
         // Store the current suggestions and their answers
