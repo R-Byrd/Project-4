@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LillyBot!</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='stylev2.css') }}">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+</head>
+<body>
+    <!-- Banner section with text overlay -->
+    <header class="banner-container">
+        <img src="{{ url_for('static', filename='images/banner.jpg') }}" alt="Website Banner" class="banner">
+        <div class="banner-text">LillyBot</div>
+    </header>
+
+    <!-- Minimize Bar -->
+    <div id="minimizeBar">
+        <button id="toggle-chatbox" onclick="toggleChatbox()">&#9650;</button> <!-- Up arrow initially -->
+    </div>
+
+    <!-- Chatbot Container -->
+    <div id="chatbotContainer">
+        <div id="chatbox">
+            <div id="messages"></div>
+            
+            <!-- Loading animation (3 moving dots) -->
+            <div id="loading">
+                <span></span><span></span><span></span>
+            </div>
+            
+            <div id="inputContainer">
+                <input type="text" id="userMessage" placeholder="Ask a question..." autocomplete="off">
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Responsive iframe for Visit Antigua and Barbuda -->
+    <section id="visit-antigua">
+        <iframe id="visit-antigua-iframe" src="https://www.visitantiguabarbuda.com/" allowfullscreen></iframe>
+        <div id="map"></div> <!-- Leaflet map div with hidden state -->
+        <button id="exit-map-btn" onclick="exitMap()">Exit Map</button> <!-- Exit button to go back to the website -->
+    </section>
+
+    <script>
+        let isMinimized = false;
+        let mapInitialized = false;
+        let mapInstance = null;  // Keep track of the map instance
+
+        // Function to toggle chatbox between minimized and expanded
+        function toggleChatbox() {
+            const chatboxContainer = document.getElementById('chatbotContainer');
+            const minimizeBar = document.getElementById('minimizeBar');
+            const toggleButton = document.getElementById('toggle-chatbox');
+
+            if (isMinimized) {
+                chatboxContainer.style.height = '400px'; // Expand chatbox
+                chatboxContainer.style.bottom = '20px'; // Move it up
+                minimizeBar.style.bottom = '420px'; // Adjust minimize bar position above expanded chatbox
+                toggleButton.innerHTML = '&#9650;'; // Up arrow
+                isMinimized = false;
+            } else {
+                chatboxContainer.style.height = '50px'; // Minimize chatbox
+                chatboxContainer.style.bottom = '20px'; // Keep it slightly above the bottom
+                minimizeBar.style.bottom = '70px'; // Adjust minimize bar position
+                toggleButton.innerHTML = '&#9660;'; // Down arrow
+                isMinimized = true;
+            }
+        }
+
+        // Listen for "Enter" key press in the input field
+        document.getElementById('userMessage').addEventListener('keydown', function (event) {
+            if (event.key === 'Enter' || event.keyCode === 13) {
+                event.preventDefault(); // Prevent the default behavior
+                sendMessage(); // Call sendMessage when Enter is pressed
+            }
+        });
+
+        // Function to send the user message to the chatbot API
+        async function sendMessage() {
+            const userMessage = document.getElementById('userMessage').value;
+
+            // If the input is empty, don't send anything
+            if (!userMessage.trim()) return;
+
+            // Display the user's message in the chatbox
+            const userMessageDiv = document.createElement('div');
+            userMessageDiv.classList.add('user-message');
+            userMessageDiv.textContent = `You: ${userMessage}`;
+            document.getElementById('messages').appendChild(userMessageDiv);
+
+            // Automatically scroll to the bottom after adding the user message
+            userMessageDiv.scrollIntoView({ behavior: 'smooth' });
+
+            // Show loading animation while waiting for response
+            document.getElementById('loading').style.display = 'block';
+
+            // Send the message to the Flask API using fetch
+            const response = await fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: userMessage })
+            });
+
+            const data = await response.json();
+
+            // Hide loading animation after getting the response
+            document.getElementById('loading').style.display = 'none';
+
+            // Check if the answer is 'map' or 'interactive_map'
+            if (data.response === 'map') {
+                displayMap('map');
+            } else if (data.response === 'interactive_map') {
+                displayMap('interactive_map');
+            } else {
+                // Display the chatbot's response
+                const botMessageDiv = document.createElement('div');
+                botMessageDiv.classList.add('bot-message');
+                botMessageDiv.textContent = `LillyBot: ${data.response}`;
+                document.getElementById('messages').appendChild(botMessageDiv);
+
+                // Automatically scroll to the bottom after adding the bot response
+                botMessageDiv.scrollIntoView({ behavior: 'smooth' });
+            }
+
+            // Clear the input field
+            document.getElementById('userMessage').value = '';
+        }
+
+        // Function to display the Leaflet map or interactive map
+        function displayMap(answerType) {
+            const iframe = document.getElementById('visit-antigua-iframe');
+            const mapDiv = document.getElementById('map');
+            const exitButton = document.getElementById('exit-map-btn');
+
+            if (answerType === 'interactive_map') {
+                // Show the interactive map URL in the iframe
+                iframe.src = 'https://tourmkr.com/F1wDKd8y7O/42284745p&250.96h&75.13t';
+                iframe.style.display = 'block';
+                mapDiv.style.display = 'none'; // Hide the Leaflet map
+            } else {
+                // Hide the iframe and display the Leaflet map
+                iframe.style.display = 'none';
+                mapDiv.style.display = 'block';
+
+                // Initialize the Leaflet map if it hasn't been initialized yet
+                if (!mapInitialized || mapInstance === null) {
+                    mapInstance = L.map('map').setView([17.0747, -61.8175], 8); // Coordinates for Antigua and Barbuda
+
+                    // Set up the tile layer for the map
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        maxZoom: 18,
+                        attribution: '© OpenStreetMap'
+                    }).addTo(mapInstance);
+
+                    // Add markers for Antigua and Barbuda
+                    L.marker([17.118, -61.845]).addTo(mapInstance) // Antigua
+                        .bindPopup('<b>Antigua</b><br>Welcome to Antigua.').openPopup();
+                    L.marker([17.637, -61.828]).addTo(mapInstance) // Barbuda
+                        .bindPopup('<b>Barbuda</b><br>Welcome to Barbuda.').openPopup();
+
+                    mapInitialized = true; // Mark the map as initialized
+                } else {
+                    // If map already exists, invalidate its size to force it to render correctly
+                    mapInstance.invalidateSize();
+                }
+            }
+
+            // Show the exit button
+            exitButton.style.display = 'block';
+        }
+
+        // Function to exit the map and go back to the website
+        function exitMap() {
+            const iframe = document.getElementById('visit-antigua-iframe');
+            const mapDiv = document.getElementById('map');
+            const exitButton = document.getElementById('exit-map-btn');
+
+            // Switch back to the website URL
+            iframe.src = 'https://www.visitantiguabarbuda.com/';
+            iframe.style.display = 'block';
+
+            // Hide the Leaflet map
+            mapDiv.style.display = 'none';
+
+            // Hide the exit button after switching back to the website
+            exitButton.style.display = 'none';
+        }
+    </script>
+</body>
+</html>

@@ -16,7 +16,7 @@ X = vectorizer.fit_transform(faq_df['Combined'])
 
 def suggest_questions_based_on_model(user_input):
     # Detect if the user is asking for the location of Antigua or Barbuda
-    if "where" in user_input.lower() and ("antigua" in user_input.lower() or "barbuda" in user_input.lower()):
+    if "map" in user_input.lower() and ("antigua" in user_input.lower() or "barbuda" in user_input.lower()):
         return [{
             'question': user_input,
             'answer': 'map'  # Special signal to display the map
