@@ -1,3 +1,6 @@
+Completed by Reah Byrd, Karin Treski, and Kingsley 
+
+
 LillyBot - FAQ Model
 #Overview
 
